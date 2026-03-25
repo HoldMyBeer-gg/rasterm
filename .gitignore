@@ -1,0 +1,27 @@
+/target/
+/Cargo.lock
+*.swp
+*.swo
+*~
+.DS_Store
+.bg-shell/
+memory/
+blah
+test.obj
+test-run.sh
+BUGFIX.md
+CONVERSION_NOTES.md
+PROJECT_STATUS.md
+PROJECT_SUMMARY.md
+QUICKSTART.md
+STATUS.md
+# Original JS/TS project files
+*.ts
+*.js
+package.json
+package-lock.json
+tsconfig.json
+scene/
+terminal.gif
+license
+.vscode/

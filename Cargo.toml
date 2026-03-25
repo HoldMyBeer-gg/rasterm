@@ -1,0 +1,39 @@
+[package]
+name = "rasterm"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "A software rasterizer that renders 3D scenes to the terminal"
+
+[[bin]]
+name = "rasterm"
+path = "src/main.rs"
+
+[dependencies]
+# Fast SIMD vector/matrix math
+glam = "0.27"
+
+# Cross-platform terminal control
+crossterm = "0.28"
+
+# Image loading (textures)
+image = "0.25"
+
+# Error handling
+anyhow = "1.0"
+
+# Parallel rendering (optional, for optimization phase)
+rayon = { version = "1.10", optional = true }
+
+[features]
+default = ["parallel"]
+parallel = ["rayon"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 1  # Faster debug builds
