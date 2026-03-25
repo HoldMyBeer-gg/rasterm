@@ -4,7 +4,7 @@ A 3D software renderer written in Rust, rendered entirely in the terminal. No GP
 
 A software rasterizer built from scratch in Rust. No GPU, no OpenGL — pure CPU rasterization rendered to the terminal via ANSI escape codes.
 
-![rasterm screenshot](screenshot.png)
+<video src="https://github.com/jabberwock/rasterm/releases/download/v0.1.0/demo.mp4" autoplay loop muted playsinline></video>
 
 ## Features
 
