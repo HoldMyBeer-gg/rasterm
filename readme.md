@@ -84,5 +84,4 @@ cargo build --release
 ```
 
 ## License
-
-MIT
+© 2026 — [AGPL-3.0 + Commons Clause](LICENSE). Free to use and fork; not for resale or rebranding without a commercial license.
