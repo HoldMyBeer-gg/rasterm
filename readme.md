@@ -1,5 +1,11 @@
 # rasterm
 
+[![CI](https://github.com/jabberwock/rasterm/actions/workflows/rust.yml/badge.svg)](https://github.com/jabberwock/rasterm/actions "GitHub Actions")
+[![License](https://img.shields.io/badge/License-AGPL--3.0%20%2B%20Commons%20Clause-30363D?style=flat&labelColor=1e3a5f)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-2021%20edition-orange?logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![YouTube — demo](https://img.shields.io/badge/YouTube-Watch%20demo-FF0000?logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=QrUqEvD_na8)
+
+
 A 3D software renderer written in Rust, rendered entirely in the terminal. No GPU required.
 
 A software rasterizer built from scratch in Rust. No GPU, no OpenGL — pure CPU rasterization rendered to the terminal via ANSI escape codes.
