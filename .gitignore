@@ -25,3 +25,6 @@ scene/
 terminal.gif
 license
 .vscode/
+
+# Planning artifacts - do not reintroduce
+.planning/
