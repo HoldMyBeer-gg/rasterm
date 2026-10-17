@@ -1,6 +1,6 @@
 use crate::engine::raster::Vertex;
 use crate::engine::render::Geometry;
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -74,36 +74,21 @@ fn parse_obj(content: &str) -> Result<Geometry> {
                     } else {
                         // Parse vertex reference: pos/uv/normal or pos//normal or pos/uv or pos
                         let components: Vec<&str> = part.split('/').collect();
-                        
-                        let pos_idx = components[0].parse::<isize>()? - 1;
-                        let pos_idx = if pos_idx < 0 {
-                            (positions.len() as isize + pos_idx) as usize
-                        } else {
-                            pos_idx as usize
-                        };
-                        
+
+                        let pos_idx = resolve_index(components[0], positions.len(), "v")?;
+
                         let uv_idx = if components.len() > 1 && !components[1].is_empty() {
-                            let idx = components[1].parse::<isize>()? - 1;
-                            Some(if idx < 0 {
-                                (uvs.len() as isize + idx) as usize
-                            } else {
-                                idx as usize
-                            })
+                            Some(resolve_index(components[1], uvs.len(), "vt")?)
                         } else {
                             None
                         };
-                        
+
                         let normal_idx = if components.len() > 2 && !components[2].is_empty() {
-                            let idx = components[2].parse::<isize>()? - 1;
-                            Some(if idx < 0 {
-                                (normals.len() as isize + idx) as usize
-                            } else {
-                                idx as usize
-                            })
+                            Some(resolve_index(components[2], normals.len(), "vn")?)
                         } else {
                             None
                         };
-                        
+
                         // Build vertex data: [x, y, z, nx, ny, nz, u, v]
                         let pos = positions[pos_idx];
                         let normal = normal_idx.map(|i| normals[i]).unwrap_or([0.0, 1.0, 0.0]);
@@ -136,6 +121,23 @@ fn parse_obj(content: &str) -> Result<Geometry> {
     }
     
     Geometry::with_limits(vertices, indices)
+}
+
+/// Resolve a 1-based OBJ face index (negative = relative to end) to a 0-based
+/// index, rejecting anything outside the referenced list.
+fn resolve_index(text: &str, len: usize, kind: &str) -> Result<usize> {
+    let raw: isize = text
+        .parse()
+        .with_context(|| format!("Invalid {} index: {:?}", kind, text))?;
+    let resolved = if raw < 0 {
+        len as isize + raw
+    } else {
+        raw - 1
+    };
+    if resolved < 0 || resolved as usize >= len {
+        bail!("{} index {} out of range (have {} entries)", kind, raw, len);
+    }
+    Ok(resolved as usize)
 }
 
 /// Reduce polygon count using simple decimation
@@ -268,6 +270,25 @@ f 1//1 2//1 3//1
         assert_eq!(geometry.indices.len(), 3);
     }
     
+    #[test]
+    fn test_face_index_out_of_range_is_error() {
+        let obj = "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 99\n";
+        assert!(parse_obj(obj).is_err());
+
+        let obj = "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 -4\n";
+        assert!(parse_obj(obj).is_err());
+
+        let obj = "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 0\n";
+        assert!(parse_obj(obj).is_err());
+    }
+
+    #[test]
+    fn test_negative_face_index() {
+        let obj = "v 0 0 0\nv 1 0 0\nv 0 1 0\nf -3 -2 -1\n";
+        let geometry = parse_obj(obj).unwrap();
+        assert_eq!(geometry.indices, vec![0, 1, 2]);
+    }
+
     #[test]
     fn test_reduce_geometry() {
         let mut indices = Vec::new();
