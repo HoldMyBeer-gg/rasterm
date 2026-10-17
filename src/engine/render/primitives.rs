@@ -3,6 +3,7 @@ use crate::engine::render::Geometry;
 
 /// Create a low-poly goblin character optimized for terminal rendering
 /// Total: ~50 triangles - enough to be recognizable, small enough to render fast
+#[rustfmt::skip]
 pub fn create_goblin() -> Geometry {
     let vertices = vec![
         // HEAD (oversized for goblin proportions)
@@ -106,6 +107,7 @@ pub fn create_goblin() -> Geometry {
 }
 
 /// Create the Triforce from The Legend of Zelda (3 golden triangles)
+#[rustfmt::skip]
 pub fn create_triforce() -> Geometry {
     let size = 1.0;
     let height = size * 0.866; // sqrt(3)/2 for equilateral triangle
@@ -153,6 +155,7 @@ pub fn create_triforce() -> Geometry {
 }
 
 /// Create a simple cube geometry
+#[rustfmt::skip]
 pub fn create_cube() -> Geometry {
     // Cube vertices: position (x, y, z), normal (nx, ny, nz), uv (u, v)
     let vertices = vec![
@@ -213,6 +216,7 @@ pub fn create_cube() -> Geometry {
 }
 
 /// Create a simple pyramid geometry
+#[rustfmt::skip]
 pub fn create_pyramid() -> Geometry {
     let vertices = vec![
         // Base

@@ -15,11 +15,7 @@ pub struct ClipVertex {
 ///
 /// The near plane test in clip space (before perspective divide) is: w + z >= 0
 /// A vertex is inside if position.w + position.z >= 0
-pub fn clip_triangle_near(
-    v0: &ClipVertex,
-    v1: &ClipVertex,
-    v2: &ClipVertex,
-) -> SmallVec {
+pub fn clip_triangle_near(v0: &ClipVertex, v1: &ClipVertex, v2: &ClipVertex) -> SmallVec {
     let input = [v0.clone(), v1.clone(), v2.clone()];
     let mut output = SmallVec::new();
 
@@ -232,6 +228,10 @@ mod tests {
         let intersection = lerp_clip_vertex(&v0, &v1, t);
 
         let near_dist = intersection.position.w + intersection.position.z;
-        assert!(near_dist.abs() < 1e-5, "intersection should be on near plane, got {}", near_dist);
+        assert!(
+            near_dist.abs() < 1e-5,
+            "intersection should be on near plane, got {}",
+            near_dist
+        );
     }
 }

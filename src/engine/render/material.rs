@@ -70,13 +70,21 @@ impl Material {
         }
     }
 
-    pub fn build_textured_uniform(&self, projection: Mat4, view: Mat4, matrix: Mat4) -> TexturedUniform {
+    pub fn build_textured_uniform(
+        &self,
+        projection: Mat4,
+        view: Mat4,
+        matrix: Mat4,
+    ) -> TexturedUniform {
         TexturedUniform {
             projection,
             view,
             normal_matrix: Self::normal_matrix(matrix),
             matrix,
-            texture: self.texture.as_ref().map_or(std::ptr::null(), |t| t as *const Texture),
+            texture: self
+                .texture
+                .as_ref()
+                .map_or(std::ptr::null(), |t| t as *const Texture),
         }
     }
 }

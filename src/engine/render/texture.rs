@@ -31,7 +31,11 @@ impl Texture {
 
         let data: Vec<f32> = raw.iter().map(|&b| b as f32 / 255.0).collect();
 
-        Ok(Self { width, height, data })
+        Ok(Self {
+            width,
+            height,
+            data,
+        })
     }
 
     /// Sample the texture at normalized UV coordinates [0.0, 1.0] with wrapping.

@@ -1,4 +1,4 @@
-use super::clip::{ClipVertex, clip_triangle_near};
+use super::clip::{clip_triangle_near, ClipVertex};
 use super::{DepthBuffer, FragmentProgram, Vertex, VertexProgram};
 use crate::engine::render::Texture;
 use glam::{Vec2, Vec4};
@@ -35,9 +35,18 @@ impl Raster {
         vertex_program.main(uniform, vertex_2, &mut varying_2, &mut position_2);
 
         // Near-plane clip
-        let cv0 = ClipVertex { position: position_0, varying: varying_0 };
-        let cv1 = ClipVertex { position: position_1, varying: varying_1 };
-        let cv2 = ClipVertex { position: position_2, varying: varying_2 };
+        let cv0 = ClipVertex {
+            position: position_0,
+            varying: varying_0,
+        };
+        let cv1 = ClipVertex {
+            position: position_1,
+            varying: varying_1,
+        };
+        let cv2 = ClipVertex {
+            position: position_2,
+            varying: varying_2,
+        };
 
         let clipped = clip_triangle_near(&cv0, &cv1, &cv2);
         if clipped.len() < 3 {
@@ -141,11 +150,8 @@ impl Raster {
                     depth.set(x, y, frag_depth);
 
                     // Interpolate varying (perspective-correct)
-                    let frag_varying = Vertex::interpolate(
-                        &vary0, &vary1, &vary2,
-                        w0, w1, w2,
-                        frag_depth,
-                    );
+                    let frag_varying =
+                        Vertex::interpolate(&vary0, &vary1, &vary2, w0, w1, w2, frag_depth);
 
                     // Execute fragment shader
                     let mut frag_color = Vec4::ZERO;

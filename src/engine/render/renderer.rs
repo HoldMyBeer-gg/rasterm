@@ -68,7 +68,8 @@ impl Renderer {
             ShaderType::Textured => {
                 let vertex_program = &material.textured_vertex_program;
                 let fragment_program = &material.textured_fragment_program;
-                let uniform = material.build_textured_uniform(camera.projection, camera.view, *transform);
+                let uniform =
+                    material.build_textured_uniform(camera.projection, camera.view, *transform);
                 self.rasterize_triangles(vertex_program, fragment_program, &uniform, geometry);
             }
         }

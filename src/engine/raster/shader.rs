@@ -5,7 +5,13 @@ use glam::Vec4;
 pub trait VertexProgram {
     type Uniform;
 
-    fn main(&self, uniform: &Self::Uniform, vertex: &Vertex, varying: &mut Vertex, position: &mut Vec4);
+    fn main(
+        &self,
+        uniform: &Self::Uniform,
+        vertex: &Vertex,
+        varying: &mut Vertex,
+        position: &mut Vec4,
+    );
 }
 
 /// Fragment shader trait - computes pixel colors

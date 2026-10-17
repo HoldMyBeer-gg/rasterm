@@ -1,4 +1,3 @@
-
 /// Depth buffer for Z-buffering
 pub struct DepthBuffer {
     width: usize,

@@ -66,7 +66,10 @@ impl Geometry {
         let w = weight.clamp(0.0, 1.0);
         let inv_w = 1.0 - w;
 
-        let vertices = self.vertices.iter().zip(target.vertices.iter())
+        let vertices = self
+            .vertices
+            .iter()
+            .zip(target.vertices.iter())
             .map(|(a, b)| {
                 let len = a.data.len().min(b.data.len());
                 let mut data = Vec::with_capacity(len);

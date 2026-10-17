@@ -33,11 +33,20 @@ impl<T: Interpolatable + Clone> Channel<T> {
     }
 
     pub fn add_keyframe(&mut self, time: f32, value: T, interpolation: Interpolation) {
-        let kf = Keyframe { time, value, interpolation };
+        let kf = Keyframe {
+            time,
+            value,
+            interpolation,
+        };
 
         // Insert sorted by time
-        let pos = self.keyframes
-            .binary_search_by(|k| k.time.partial_cmp(&time).unwrap_or(std::cmp::Ordering::Equal))
+        let pos = self
+            .keyframes
+            .binary_search_by(|k| {
+                k.time
+                    .partial_cmp(&time)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
             .unwrap_or_else(|e| e);
         self.keyframes.insert(pos, kf);
     }
@@ -168,7 +177,8 @@ impl Animation {
     }
 
     pub fn duration(&self) -> f32 {
-        self.position.duration()
+        self.position
+            .duration()
             .max(self.rotation.duration())
             .max(self.scale.duration())
     }
@@ -215,7 +225,8 @@ pub fn create_orbit_animation(radius: f32, height: f32, duration: f32, steps: u3
         let x = angle.cos() * radius;
         let z = angle.sin() * radius;
 
-        anim.position.add_keyframe(time, Vec3::new(x, height, z), Interpolation::Linear);
+        anim.position
+            .add_keyframe(time, Vec3::new(x, height, z), Interpolation::Linear);
     }
 
     anim
@@ -232,7 +243,8 @@ pub fn create_bob_animation(amplitude: f32, frequency: f32, duration: f32) -> An
         let time = t * duration;
         let y = (t * frequency * std::f32::consts::TAU).sin() * amplitude;
 
-        anim.position.add_keyframe(time, Vec3::new(0.0, y, 0.0), Interpolation::Smooth);
+        anim.position
+            .add_keyframe(time, Vec3::new(0.0, y, 0.0), Interpolation::Smooth);
     }
 
     anim
@@ -249,11 +261,8 @@ pub fn create_spin_animation(duration: f32, revolutions: f32) -> Animation {
         let time = t * duration;
         let angle = t * revolutions * std::f32::consts::TAU;
 
-        anim.rotation.add_keyframe(
-            time,
-            Quat::from_rotation_y(angle),
-            Interpolation::Linear,
-        );
+        anim.rotation
+            .add_keyframe(time, Quat::from_rotation_y(angle), Interpolation::Linear);
     }
 
     anim
@@ -348,10 +357,14 @@ mod tests {
     #[test]
     fn test_animation_duration() {
         let mut anim = Animation::new("test");
-        anim.position.add_keyframe(0.0, Vec3::ZERO, Interpolation::Linear);
-        anim.position.add_keyframe(5.0, Vec3::ONE, Interpolation::Linear);
-        anim.rotation.add_keyframe(0.0, Quat::IDENTITY, Interpolation::Linear);
-        anim.rotation.add_keyframe(3.0, Quat::from_rotation_y(1.0), Interpolation::Linear);
+        anim.position
+            .add_keyframe(0.0, Vec3::ZERO, Interpolation::Linear);
+        anim.position
+            .add_keyframe(5.0, Vec3::ONE, Interpolation::Linear);
+        anim.rotation
+            .add_keyframe(0.0, Quat::IDENTITY, Interpolation::Linear);
+        anim.rotation
+            .add_keyframe(3.0, Quat::from_rotation_y(1.0), Interpolation::Linear);
 
         assert_eq!(anim.duration(), 5.0);
     }
@@ -360,8 +373,10 @@ mod tests {
     fn test_animation_looping() {
         let mut anim = Animation::new("test");
         anim.looping = true;
-        anim.position.add_keyframe(0.0, Vec3::ZERO, Interpolation::Linear);
-        anim.position.add_keyframe(2.0, Vec3::new(10.0, 0.0, 0.0), Interpolation::Linear);
+        anim.position
+            .add_keyframe(0.0, Vec3::ZERO, Interpolation::Linear);
+        anim.position
+            .add_keyframe(2.0, Vec3::new(10.0, 0.0, 0.0), Interpolation::Linear);
 
         // At t=1.0, should be at x=5.0
         let state = anim.sample(1.0);

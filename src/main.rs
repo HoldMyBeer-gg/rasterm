@@ -7,11 +7,11 @@ use crossterm::{
     cursor,
     event::{Event, KeyCode, KeyEvent, KeyModifiers},
     execute,
-    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen, Clear, ClearType},
+    terminal::{self, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use engine::{
     animation::{Animation, Interpolation},
-    render::{Camera, Material, Mesh, Renderer, Scene, primitives},
+    render::{primitives, Camera, Material, Mesh, Renderer, Scene},
     terminal::{AsciiTerminal, ColorTerminal, Terminal},
 };
 use glam::{Mat4, Vec3};
@@ -93,19 +93,20 @@ fn build_camera_animation(demo_index: usize) -> Animation {
                 let h = 0.8 * (angle * 1.5).sin(); // rise and fall
                 let x = angle.cos() * r;
                 let z = angle.sin() * r;
-                anim.position.add_keyframe(time, Vec3::new(x, h, z), Interpolation::Smooth);
+                anim.position
+                    .add_keyframe(time, Vec3::new(x, h, z), Interpolation::Smooth);
             }
         }
         1 => {
             // Suzanne: slow dramatic face reveal — start from side, sweep to front, hold, continue
             let kfs = [
-                (0.0,  Vec3::new(3.5, 0.3, 0.0)),    // side profile
-                (3.0,  Vec3::new(2.5, 0.5, 2.5)),     // rising quarter view
-                (6.0,  Vec3::new(0.0, 0.2, 3.5)),     // front face — hold the smile
-                (8.0,  Vec3::new(0.0, -0.2, 3.5)),    // slight dip, still front
-                (11.0, Vec3::new(-2.5, 0.8, 2.5)),    // sweep past to other side, rising
-                (14.0, Vec3::new(-3.5, 0.0, 0.0)),    // other side profile
-                (16.0, Vec3::new(-2.5, -0.3, -2.5)),  // loop back
+                (0.0, Vec3::new(3.5, 0.3, 0.0)),     // side profile
+                (3.0, Vec3::new(2.5, 0.5, 2.5)),     // rising quarter view
+                (6.0, Vec3::new(0.0, 0.2, 3.5)),     // front face — hold the smile
+                (8.0, Vec3::new(0.0, -0.2, 3.5)),    // slight dip, still front
+                (11.0, Vec3::new(-2.5, 0.8, 2.5)),   // sweep past to other side, rising
+                (14.0, Vec3::new(-3.5, 0.0, 0.0)),   // other side profile
+                (16.0, Vec3::new(-2.5, -0.3, -2.5)), // loop back
             ];
             for (time, pos) in kfs {
                 anim.position.add_keyframe(time, pos, Interpolation::Smooth);
@@ -123,20 +124,21 @@ fn build_camera_animation(demo_index: usize) -> Animation {
                 let h = 1.5 * (angle * 2.0).sin(); // dramatic swoop up/down
                 let x = angle.cos() * r;
                 let z = angle.sin() * r;
-                anim.position.add_keyframe(time, Vec3::new(x, h, z), Interpolation::Smooth);
+                anim.position
+                    .add_keyframe(time, Vec3::new(x, h, z), Interpolation::Smooth);
             }
         }
         3 => {
             // Spaceship: flyby — zoom in close, sweep around, pull back
             let kfs = [
-                (0.0,  Vec3::new(0.0, 1.0, 6.0)),     // distant front
-                (2.5,  Vec3::new(1.5, 0.5, 3.0)),      // approach from right
-                (4.5,  Vec3::new(2.0, 0.2, 0.0)),      // close side pass
-                (6.5,  Vec3::new(1.5, -0.3, -2.5)),    // sweep behind and below
-                (8.5,  Vec3::new(-1.5, 0.8, -2.5)),    // come around other side, above
-                (10.5, Vec3::new(-2.0, 1.2, 0.0)),     // dramatic high side view
-                (12.5, Vec3::new(-1.0, 0.5, 3.0)),     // return to front area
-                (14.0, Vec3::new(0.0, 1.0, 6.0)),      // back to start
+                (0.0, Vec3::new(0.0, 1.0, 6.0)),   // distant front
+                (2.5, Vec3::new(1.5, 0.5, 3.0)),   // approach from right
+                (4.5, Vec3::new(2.0, 0.2, 0.0)),   // close side pass
+                (6.5, Vec3::new(1.5, -0.3, -2.5)), // sweep behind and below
+                (8.5, Vec3::new(-1.5, 0.8, -2.5)), // come around other side, above
+                (10.5, Vec3::new(-2.0, 1.2, 0.0)), // dramatic high side view
+                (12.5, Vec3::new(-1.0, 0.5, 3.0)), // return to front area
+                (14.0, Vec3::new(0.0, 1.0, 6.0)),  // back to start
             ];
             for (time, pos) in kfs {
                 anim.position.add_keyframe(time, pos, Interpolation::Smooth);
@@ -154,7 +156,8 @@ fn build_camera_animation(demo_index: usize) -> Animation {
                 let h = 1.0 + 0.5 * (angle * 2.0).sin(); // gentle rise
                 let x = angle.cos() * r;
                 let z = angle.sin() * r;
-                anim.position.add_keyframe(time, Vec3::new(x, h, z), Interpolation::Smooth);
+                anim.position
+                    .add_keyframe(time, Vec3::new(x, h, z), Interpolation::Smooth);
             }
         }
         _ => {
@@ -167,7 +170,8 @@ fn build_camera_animation(demo_index: usize) -> Animation {
                 let angle = t * std::f32::consts::TAU;
                 let x = angle.cos() * 3.0;
                 let z = angle.sin() * 3.0;
-                anim.position.add_keyframe(time, Vec3::new(x, 0.5, z), Interpolation::Linear);
+                anim.position
+                    .add_keyframe(time, Vec3::new(x, 0.5, z), Interpolation::Linear);
             }
         }
     }
@@ -269,8 +273,6 @@ impl CameraController {
             }
         }
     }
-
-
 }
 
 struct App {
@@ -310,7 +312,12 @@ impl App {
         })
     }
 
-    fn load_obj_file(&mut self, path: &Path, max_triangles: usize, texture_path: Option<&Path>) -> Result<()> {
+    fn load_obj_file(
+        &mut self,
+        path: &Path,
+        max_triangles: usize,
+        texture_path: Option<&Path>,
+    ) -> Result<()> {
         let geometry = loader::load_obj_auto_reduce(path, max_triangles)?;
         let material = if let Some(tex_path) = texture_path {
             Material::from_image(tex_path)?
@@ -395,15 +402,24 @@ impl App {
     fn handle_input(&mut self) -> Result<bool> {
         while crossterm::event::poll(Duration::from_millis(0))? {
             match crossterm::event::read()? {
-                Event::Key(KeyEvent { code: KeyCode::Char('q'), .. }) => return Ok(true),
-                Event::Key(KeyEvent { code: KeyCode::Char('c'), modifiers, .. })
-                    if modifiers.contains(KeyModifiers::CONTROL) => return Ok(true),
-                Event::Key(KeyEvent { code: KeyCode::Tab, .. }) if self.demo_mode => {
+                Event::Key(KeyEvent {
+                    code: KeyCode::Char('q'),
+                    ..
+                }) => return Ok(true),
+                Event::Key(KeyEvent {
+                    code: KeyCode::Char('c'),
+                    modifiers,
+                    ..
+                }) if modifiers.contains(KeyModifiers::CONTROL) => return Ok(true),
+                Event::Key(KeyEvent {
+                    code: KeyCode::Tab, ..
+                }) if self.demo_mode => {
                     self.next_demo();
                 }
-                Event::Key(KeyEvent { code: KeyCode::Char(c), .. })
-                    if self.demo_mode && ('1'..='5').contains(&c) =>
-                {
+                Event::Key(KeyEvent {
+                    code: KeyCode::Char(c),
+                    ..
+                }) if self.demo_mode && ('1'..='5').contains(&c) => {
                     let idx = (c as usize) - ('1' as usize);
                     if idx < DEMOS.len() {
                         self.load_demo(idx);
@@ -425,22 +441,14 @@ impl App {
         self.camera_controller.update(dt);
         let cam_pos = self.camera_controller.camera_position();
 
-        self.camera.projection = Mat4::perspective_rh(
-            60.0_f32.to_radians(),
-            aspect,
-            0.1,
-            1000.0,
-        );
+        self.camera.projection = Mat4::perspective_rh(60.0_f32.to_radians(), aspect, 0.1, 1000.0);
 
-        self.camera.view = Mat4::look_at_rh(
-            cam_pos,
-            Vec3::ZERO,
-            Vec3::Y,
-        );
+        self.camera.view = Mat4::look_at_rh(cam_pos, Vec3::ZERO, Vec3::Y);
 
         if let Some(mesh) = self.scene.meshes.first_mut() {
             let angle = time * self.rotation_speed;
-            mesh.matrix = Mat4::from_rotation_y(angle) * Mat4::from_scale(Vec3::splat(self.mesh_scale));
+            mesh.matrix =
+                Mat4::from_rotation_y(angle) * Mat4::from_scale(Vec3::splat(self.mesh_scale));
 
             // Suzanne smile animation — synced to camera choreography
             if self.current_demo == 1 && mesh.morph_target.is_some() {
@@ -507,25 +515,24 @@ fn main() -> Result<()> {
 
     // Setup terminal
     let mut stdout = io::stdout();
-    execute!(
-        stdout,
-        EnterAlternateScreen,
-        cursor::Hide,
-    )?;
+    execute!(stdout, EnterAlternateScreen, cursor::Hide,)?;
     terminal::enable_raw_mode()?;
 
     // Create app
     let mut app = App::new(color_mode)?;
 
     // Parse --texture flag
-    let texture_path = args.windows(2)
+    let texture_path = args
+        .windows(2)
         .find(|w| w[0] == "--texture")
         .map(|w| w[1].clone());
 
     // Load model or demo mode
-    let obj_arg = args.iter().skip(1).find(|a| !a.starts_with("--") && {
-        let idx = args.iter().position(|x| x == *a).unwrap_or(0);
-        idx < 2 || args[idx - 1] != "--texture"
+    let obj_arg = args.iter().skip(1).find(|a| {
+        !a.starts_with("--") && {
+            let idx = args.iter().position(|x| x == *a).unwrap_or(0);
+            idx < 2 || args[idx - 1] != "--texture"
+        }
     });
 
     if let Some(obj_file) = obj_arg {

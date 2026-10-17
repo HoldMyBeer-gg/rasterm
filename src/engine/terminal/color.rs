@@ -85,7 +85,8 @@ impl ColorTerminal {
 
                 for x in 0..width {
                     let color_top = texture.fast_get(x % texture.width(), y_top % texture.height());
-                    let color_bottom = texture.fast_get(x % texture.width(), y_bottom % texture.height());
+                    let color_bottom =
+                        texture.fast_get(x % texture.width(), y_bottom % texture.height());
 
                     let bg = (
                         (color_top.x * 255.0) as u8,
@@ -118,7 +119,8 @@ impl ColorTerminal {
 
             for x in 0..width {
                 let color_top = texture.fast_get(x % texture.width(), y_top % texture.height());
-                let color_bottom = texture.fast_get(x % texture.width(), y_bottom % texture.height());
+                let color_bottom =
+                    texture.fast_get(x % texture.width(), y_bottom % texture.height());
 
                 let bg = (
                     (color_top.x * 255.0) as u8,

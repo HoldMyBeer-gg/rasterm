@@ -66,7 +66,13 @@ pub struct BasicVertexShader;
 impl VertexProgram for BasicVertexShader {
     type Uniform = BasicUniform;
 
-    fn main(&self, uniform: &Self::Uniform, vertex: &Vertex, varying: &mut Vertex, position: &mut Vec4) {
+    fn main(
+        &self,
+        uniform: &Self::Uniform,
+        vertex: &Vertex,
+        varying: &mut Vertex,
+        position: &mut Vec4,
+    ) {
         let pos = Vec4::new(vertex.data[0], vertex.data[1], vertex.data[2], 1.0);
 
         let world_pos = uniform.matrix * pos;
@@ -134,7 +140,13 @@ pub struct TexturedVertexShader;
 impl VertexProgram for TexturedVertexShader {
     type Uniform = TexturedUniform;
 
-    fn main(&self, uniform: &Self::Uniform, vertex: &Vertex, varying: &mut Vertex, position: &mut Vec4) {
+    fn main(
+        &self,
+        uniform: &Self::Uniform,
+        vertex: &Vertex,
+        varying: &mut Vertex,
+        position: &mut Vec4,
+    ) {
         let pos = Vec4::new(vertex.data[0], vertex.data[1], vertex.data[2], 1.0);
         let world_pos = uniform.matrix * pos;
         let view_pos = uniform.view * world_pos;

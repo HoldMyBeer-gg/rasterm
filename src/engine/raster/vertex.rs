@@ -37,11 +37,11 @@ impl Vertex {
     ) -> Self {
         let len = v0.data.len();
         let mut result = Self::new(len);
-        
+
         for i in 0..len {
             result.data[i] = (v0.data[i] * w0 + v1.data[i] * w1 + v2.data[i] * w2) * depth;
         }
-        
+
         result
     }
 

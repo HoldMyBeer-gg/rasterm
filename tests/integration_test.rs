@@ -1,3 +1,4 @@
+use glam::{Mat4, Vec4};
 use rasterm::engine::{
     raster::{Raster, Vertex},
     render::{
@@ -5,7 +6,6 @@ use rasterm::engine::{
         Geometry, Texture,
     },
 };
-use glam::{Mat4, Vec4};
 
 #[test]
 fn test_triangle_rendering() {
@@ -57,7 +57,11 @@ fn test_triangle_rendering() {
         }
     }
 
-    assert!(any_rendered, "Triangle should render at least some pixels (max color: {})", max_val);
+    assert!(
+        any_rendered,
+        "Triangle should render at least some pixels (max color: {})",
+        max_val
+    );
 }
 
 #[test]
@@ -164,12 +168,22 @@ fn test_primitives() {
     use rasterm::engine::render::primitives;
 
     let cube = primitives::create_cube();
-    assert_eq!(cube.indices.len() % 3, 0, "cube indices should be multiple of 3");
-    assert!(cube.indices.len() >= 36, "cube should have at least 12 triangles");
+    assert_eq!(
+        cube.indices.len() % 3,
+        0,
+        "cube indices should be multiple of 3"
+    );
+    assert!(
+        cube.indices.len() >= 36,
+        "cube should have at least 12 triangles"
+    );
 
     let pyramid = primitives::create_pyramid();
     assert_eq!(pyramid.indices.len() % 3, 0);
-    assert!(pyramid.indices.len() >= 18, "pyramid should have at least 6 triangles");
+    assert!(
+        pyramid.indices.len() >= 18,
+        "pyramid should have at least 6 triangles"
+    );
 
     let triforce = primitives::create_triforce();
     assert_eq!(triforce.indices.len() % 3, 0);
