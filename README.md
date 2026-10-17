@@ -10,7 +10,9 @@ A 3D software renderer written in Rust, rendered entirely in the terminal. No GP
 
 A software rasterizer built from scratch in Rust. No GPU, no OpenGL — pure CPU rasterization rendered to the terminal via ANSI escape codes.
 
-https://github.com/user-attachments/assets/4dd03cfd-b886-43b1-810f-6c56e65f469b
+https://github.com/user-attachments/assets/926853e8-365d-48aa-812b-3a7872b59bd0
+
+<sub>Music: "Deeper Still" by Circuit Breaker</sub>
 
 ## Features
 
