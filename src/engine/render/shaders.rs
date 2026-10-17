@@ -36,7 +36,8 @@ fn diffuse_lighting(world_normal: Vec3) -> f32 {
     let ndotl = n.dot(LIGHT_DIR).abs(); // two-sided lighting
     let ambient = 0.15;
     let diffuse = 0.85;
-    ambient + diffuse * ndotl
+    // Clamp so a degenerate (NaN) normal can't poison the colour cast later.
+    (ambient + diffuse * ndotl).clamp(0.0, 1.0)
 }
 
 /// Compute diffuse + specular for metallic materials (two-sided).
@@ -54,8 +55,8 @@ fn metallic_lighting(world_normal: Vec3) -> (f32, f32) {
     let spec = n.dot(half).max(0.0).powf(32.0);
 
     let ambient = 0.1;
-    let diffuse = ambient + 0.7 * ndotl;
-    let specular = 0.6 * spec;
+    let diffuse = (ambient + 0.7 * ndotl).clamp(0.0, 1.0);
+    let specular = (0.6 * spec).clamp(0.0, 1.0);
     (diffuse, specular)
 }
 
@@ -175,11 +176,8 @@ impl FragmentProgram for TexturedFragmentShader {
             1.0
         };
 
-        *color = Vec4::new(
-            tex_color.x * intensity,
-            tex_color.y * intensity,
-            tex_color.z * intensity,
-            tex_color.w,
-        );
+        *color = (tex_color * intensity)
+            .with_w(tex_color.w)
+            .clamp(Vec4::ZERO, Vec4::ONE);
     }
 }
