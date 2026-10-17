@@ -257,16 +257,16 @@ impl CameraController {
     }
 
     fn camera_position(&self) -> Vec3 {
-        if self.manual_override || self.camera_anim.is_none() {
-            // Manual orbit
-            let x = self.yaw.sin() * self.pitch.cos() * self.distance;
-            let y = self.pitch.sin() * self.distance;
-            let z = self.yaw.cos() * self.pitch.cos() * self.distance;
-            Vec3::new(x, y, z)
-        } else {
+        match &self.camera_anim {
             // Scripted animation
-            let anim = self.camera_anim.as_ref().unwrap();
-            anim.sample(self.anim_time).position
+            Some(anim) if !self.manual_override => anim.sample(self.anim_time).position,
+            // Manual orbit
+            _ => {
+                let x = self.yaw.sin() * self.pitch.cos() * self.distance;
+                let y = self.pitch.sin() * self.distance;
+                let z = self.yaw.cos() * self.pitch.cos() * self.distance;
+                Vec3::new(x, y, z)
+            }
         }
     }
 
@@ -444,8 +444,16 @@ impl App {
 
             // Suzanne smile animation — synced to camera choreography
             if self.current_demo == 1 && mesh.morph_target.is_some() {
-                // Camera path: side(0s) → front(6s) → hold(8s) → away(16s), loops at 16s
-                let anim_t = self.camera_controller.anim_time % 16.0;
+                // Camera path: side(0s) → front(6s) → hold(8s) → away(16s), loops at the
+                // animation's own duration so the smile stays in sync if keyframes change.
+                let loop_len = self
+                    .camera_controller
+                    .camera_anim
+                    .as_ref()
+                    .map(|a| a.duration())
+                    .filter(|d| *d > 0.0)
+                    .unwrap_or(16.0);
+                let anim_t = self.camera_controller.anim_time % loop_len;
                 let smile_weight = if anim_t < 3.0 {
                     0.0 // approaching, neutral
                 } else if anim_t < 6.0 {

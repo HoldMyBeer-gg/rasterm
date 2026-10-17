@@ -29,13 +29,7 @@ impl Texture {
         let height = img.height() as usize;
         let raw = img.into_raw();
 
-        let mut data = Vec::with_capacity(width * height * 4);
-        for pixel in raw.chunks_exact(4) {
-            data.push(pixel[0] as f32 / 255.0);
-            data.push(pixel[1] as f32 / 255.0);
-            data.push(pixel[2] as f32 / 255.0);
-            data.push(pixel[3] as f32 / 255.0);
-        }
+        let data: Vec<f32> = raw.iter().map(|&b| b as f32 / 255.0).collect();
 
         Ok(Self { width, height, data })
     }
@@ -125,8 +119,8 @@ impl Texture {
     }
 
     pub fn clear(&mut self, color: [f32; 4]) {
-        for chunk in self.data.chunks_exact_mut(4) {
-            chunk.copy_from_slice(&color);
+        for (i, v) in self.data.iter_mut().enumerate() {
+            *v = color[i & 3];
         }
     }
 
