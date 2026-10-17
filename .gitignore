@@ -28,3 +28,8 @@ license
 
 # Planning artifacts - do not reintroduce
 .planning/
+
+# Demo media (hosted via GitHub user-attachments)
+*.gif
+*.mkv
+*.mp4

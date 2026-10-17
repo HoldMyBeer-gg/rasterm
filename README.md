@@ -12,6 +12,8 @@ A software rasterizer built from scratch in Rust. No GPU, no OpenGL — pure CPU
 
 [<img src="https://img.youtube.com/vi/QrUqEvD_na8/hqdefault.jpg" width="640" alt="rasterm demo video thumbnail">](https://www.youtube.com/watch?v=QrUqEvD_na8)
 
+https://github.com/user-attachments/assets/4dd03cfd-b886-43b1-810f-6c56e65f469b
+
 ## Features
 
 - Software rasterization with programmable vertex/fragment shaders
