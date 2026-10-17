@@ -2,7 +2,7 @@
 name = "rasterm"
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
+license-file = "LICENSE"
 description = "A software rasterizer that renders 3D scenes to the terminal"
 
 [[bin]]
