@@ -1,6 +1,7 @@
 use crate::engine::raster::{FragmentProgram, Vertex, VertexProgram};
 use crate::engine::render::Texture;
 use glam::{Mat4, Vec3, Vec4};
+use std::sync::Arc;
 
 /// Shader uniform structure
 pub struct BasicUniform {
@@ -11,19 +12,15 @@ pub struct BasicUniform {
     pub normal_matrix: Mat4,
 }
 
-/// Uniform with a texture pointer for textured rendering
+/// Uniform for textured rendering. The texture is shared with the material,
+/// so building a uniform per draw call only bumps a reference count.
 pub struct TexturedUniform {
     pub projection: Mat4,
     pub view: Mat4,
     pub matrix: Mat4,
     pub normal_matrix: Mat4,
-    pub texture: *const Texture,
+    pub texture: Option<Arc<Texture>>,
 }
-
-// SAFETY: TexturedUniform is only used within a single render call on one thread.
-// The texture pointer is guaranteed valid for the duration of the render.
-unsafe impl Send for TexturedUniform {}
-unsafe impl Sync for TexturedUniform {}
 
 /// Fixed light direction (normalized) — upper-right-front
 const LIGHT_DIR: Vec3 = Vec3::new(0.48, 0.6, 0.64);
@@ -171,14 +168,11 @@ impl FragmentProgram for TexturedFragmentShader {
     type Uniform = TexturedUniform;
 
     fn main(&self, uniform: &Self::Uniform, varying: &Vertex, color: &mut Vec4) {
-        let tex_color = if !uniform.texture.is_null() && varying.data.len() >= 8 {
-            let u = varying.data[6];
-            let v = varying.data[7];
-            // SAFETY: texture pointer is valid for the duration of the render call
-            let texture = unsafe { &*uniform.texture };
-            texture.sample_uv(u, v)
-        } else {
-            Vec4::new(0.7, 0.7, 0.7, 1.0)
+        let tex_color = match uniform.texture.as_deref() {
+            Some(texture) if varying.data.len() >= 8 => {
+                texture.sample_uv(varying.data[6], varying.data[7])
+            }
+            _ => Vec4::new(0.7, 0.7, 0.7, 1.0),
         };
 
         let intensity = if varying.data.len() >= 6 {
@@ -191,5 +185,72 @@ impl FragmentProgram for TexturedFragmentShader {
         *color = (tex_color * intensity)
             .with_w(tex_color.w)
             .clamp(Vec4::ZERO, Vec4::ONE);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::engine::render::material::Material;
+    use std::sync::Arc;
+
+    fn red_texture() -> Texture {
+        let mut texture = Texture::new(1, 1);
+        texture.set(0, 0, Vec4::new(1.0, 0.0, 0.0, 1.0));
+        texture
+    }
+
+    fn uniform_with(texture: Option<Arc<Texture>>) -> TexturedUniform {
+        TexturedUniform {
+            projection: Mat4::IDENTITY,
+            view: Mat4::IDENTITY,
+            matrix: Mat4::IDENTITY,
+            normal_matrix: Mat4::IDENTITY,
+            texture,
+        }
+    }
+
+    // position, normal facing the light, uv
+    fn lit_fragment() -> Vertex {
+        Vertex::from_data(vec![0.0, 0.0, 0.0, 0.48, 0.6, 0.64, 0.5, 0.5])
+    }
+
+    #[test]
+    fn textured_fragment_samples_its_texture() {
+        let uniform = uniform_with(Some(Arc::new(red_texture())));
+        let mut color = Vec4::ZERO;
+        TexturedFragmentShader.main(&uniform, &lit_fragment(), &mut color);
+        assert!(
+            color.x > 0.0 && color.y == 0.0 && color.z == 0.0,
+            "{color:?}"
+        );
+    }
+
+    #[test]
+    fn textured_fragment_without_texture_falls_back_to_grey() {
+        let uniform = uniform_with(None);
+        let mut color = Vec4::ZERO;
+        TexturedFragmentShader.main(&uniform, &lit_fragment(), &mut color);
+        assert!(
+            color.x > 0.0 && color.x == color.y && color.y == color.z,
+            "{color:?}"
+        );
+    }
+
+    #[test]
+    fn textured_uniform_shares_the_material_texture() {
+        let material = Material::textured(red_texture());
+        let uniform =
+            material.build_textured_uniform(Mat4::IDENTITY, Mat4::IDENTITY, Mat4::IDENTITY);
+        assert!(Arc::ptr_eq(
+            material.texture.as_ref().unwrap(),
+            uniform.texture.as_ref().unwrap()
+        ));
+    }
+
+    #[test]
+    fn textured_uniform_is_send_and_sync() {
+        fn check<T: Send + Sync>() {}
+        check::<TexturedUniform>();
     }
 }

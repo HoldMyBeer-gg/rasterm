@@ -5,6 +5,7 @@ use crate::engine::render::shaders::{
 use crate::engine::render::Texture;
 use glam::Mat4;
 use std::path::Path;
+use std::sync::Arc;
 
 pub enum ShaderType {
     Basic,
@@ -19,7 +20,7 @@ pub struct Material {
     pub textured_vertex_program: TexturedVertexShader,
     pub textured_fragment_program: TexturedFragmentShader,
     pub shader_type: ShaderType,
-    pub texture: Option<Texture>,
+    pub texture: Option<Arc<Texture>>,
 }
 
 impl Material {
@@ -45,7 +46,7 @@ impl Material {
     pub fn textured(texture: Texture) -> Self {
         Self {
             shader_type: ShaderType::Textured,
-            texture: Some(texture),
+            texture: Some(Arc::new(texture)),
             ..Self::new()
         }
     }
@@ -81,10 +82,7 @@ impl Material {
             view,
             normal_matrix: Self::normal_matrix(matrix),
             matrix,
-            texture: self
-                .texture
-                .as_ref()
-                .map_or(std::ptr::null(), |t| t as *const Texture),
+            texture: self.texture.clone(),
         }
     }
 }
